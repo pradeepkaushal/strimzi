@@ -5,139 +5,32 @@ metadata:
   labels:
     app: strimzi
 rules:
-- apiGroups:
-  - ""
-  resources:
-  - configmaps
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - delete
-  - patch
-  - update
-- apiGroups:
-  - ""
-  resources:
-  - pods
-  verbs:
-  - get
-  - list
-  - watch
-  - delete
-- apiGroups:
-  - ""
-  resources:
-  - services
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - delete
-  - patch
-  - update
-- apiGroups:
-  - ""
-  resources:
-  - endpoints
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - "extensions"
-  resources:
-  - deployments
-  - deployments/scale
-  - replicasets
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - delete
-  - patch
-  - update
-- apiGroups:
-  - "apps"
-  resources:
-  - deployments
-  - deployments/scale
-  - deployments/status
-  - statefulsets
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - delete
-  - patch
-  - update
+- apiGroups: ""
+  resources: ["configmaps", "services", "replicationcontrollers"]
+  verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
+- apiGroups: ""
+  resources: "pods"
+  verbs: ["get", "list", "watch", "delete"]
+- apiGroups: ""
+  resources: "endpoints"
+  verbs: ["get", "list", "watch"]
+- apiGroups: "extensions"
+  resources: ["deployments", "deployments/scale", "replicasets"]
+  verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
+- apiGroups: "apps"
+  resources: ["deployments", "deployments/scale", "deployments/status", "statefulsets"]
+  verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
 # OpenShift S2I requirements
-- apiGroups:
-  - "extensions"
-  resources:
-  - replicationcontrollers
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - delete
-  - patch
-  - update
-- apiGroups:
-  - apps.openshift.io
-  resources:
-  - deploymentconfigs
-  - deploymentconfigs/scale
-  - deploymentconfigs/status
-  - deploymentconfigs/finalizers
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - delete
-  - patch
-  - update
-- apiGroups:
-  - build.openshift.io
-  resources:
-  - buildconfigs
-  - builds
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - watch
-  - update
-- apiGroups:
-  - image.openshift.io
-  resources:
-  - imagestreams
-  - imagestreams/status
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - watch
-  - patch
-  - update
-- apiGroups:
-  - ""
-  resources:
-  - replicationcontrollers
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - delete
-  - patch
-  - update
+- apiGroups: "extensions"
+  resources: "replicationcontrollers"
+  verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
+- apiGroups: "apps.openshift.io"
+  resources: ["deploymentconfigs", "deploymentconfigs/scale", "deploymentconfigs/status", "deploymentconfigs/finalizers"]
+  verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
+- apiGroups: "build.openshift.io"
+  resources: ["buildconfigs", "builds"]
+  verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
+- apiGroups: "image.openshift.io"
+  resources: ["imagestreams", "imagestreams/status"]
+  verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
+
