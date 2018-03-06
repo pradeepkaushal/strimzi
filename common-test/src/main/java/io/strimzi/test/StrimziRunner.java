@@ -127,7 +127,7 @@ public class StrimziRunner extends BlockJUnit4ClassRunner {
         return list;
     }
 
-    static abstract class Bracket extends Statement implements Runnable {
+    abstract class Bracket extends Statement implements Runnable {
         private final Statement statement;
         private final Thread hook = new Thread(this);
         public Bracket(Statement statement) {
@@ -139,6 +139,12 @@ public class StrimziRunner extends BlockJUnit4ClassRunner {
                 Runtime.getRuntime().addShutdownHook(hook);
                 before();
                 statement.evaluate();
+            } catch (Throwable e) {
+                if (!(e instanceof VirtualMachineError)) {
+                    onError(e);
+                }
+                throw e;
+
             } finally {
                 Runtime.getRuntime().removeShutdownHook(hook);
                 runAfter();
@@ -147,6 +153,28 @@ public class StrimziRunner extends BlockJUnit4ClassRunner {
         }
         protected abstract void before();
         protected abstract void after();
+
+        String indent(String s) {
+            StringBuilder sb = new StringBuilder();
+            String[] lines = s.split("[\n\r]");
+            for (String line : lines) {
+                sb.append("    ").append(line).append(System.lineSeparator());
+            }
+            return sb.toString();
+        }
+
+        protected void onError(Throwable t) {
+            for (String resourceType : asList("pod", "deployment", "statefulset", "cm")) {
+                for (String resourceName : kubeClient().list(resourceType)) {
+                    LOGGER.info("Description of {} '{}':{}{}", resourceType, resourceName,
+                            System.lineSeparator(), indent(kubeClient().describe(resourceType, resourceName)));
+                }
+            }
+            for (String pod : kubeClient().list("pod")) {
+                LOGGER.info("Logs from pod {}:{}{}", pod, System.lineSeparator(), indent(kubeClient().logs(pod)));
+            }
+        }
+
         @Override
         public void run() {
             runAfter();
@@ -158,7 +186,7 @@ public class StrimziRunner extends BlockJUnit4ClassRunner {
         }
     }
 
-    protected KubeClient kubeClient() {
+    protected KubeClient<?> kubeClient() {
         return clusterResource().client();
     }
 
